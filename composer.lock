@@ -1,0 +1,153 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "813ad4e63797b7151a64fe5934837f09",
+    "content-hash": "6dfbc6f66120891249e94068e3343e9e",
+    "packages": [
+        {
+            "name": "orpheus/orpheus-cache",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Sowapps/orpheus-cache.git",
+                "reference": "f20079a8d462c736d442fb0bc1f1c42b295f402d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Sowapps/orpheus-cache/zipball/f20079a8d462c736d442fb0bc1f1c42b295f402d",
+                "reference": "f20079a8d462c736d442fb0bc1f1c42b295f402d",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Orpheus\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Florent HAZARD",
+                    "email": "contact@sowapps.com",
+                    "homepage": "http://sowapps.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Orpheus Cache",
+            "keywords": [
+                "apc",
+                "cache",
+                "filesystem",
+                "orpheus"
+            ],
+            "time": "2016-06-28 10:36:32"
+        },
+        {
+            "name": "orpheus/orpheus-core",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Sowapps/orpheus-core.git",
+                "reference": "246dc973e97868f1c9f356a97cdd09f78f581ab9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Sowapps/orpheus-core/zipball/246dc973e97868f1c9f356a97cdd09f78f581ab9",
+                "reference": "246dc973e97868f1c9f356a97cdd09f78f581ab9",
+                "shasum": ""
+            },
+            "require": {
+                "orpheus/orpheus-hook": "dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Orpheus\\": "src"
+                },
+                "files": [
+                    "src/_loader.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Florent HAZARD",
+                    "email": "contact@sowapps.com",
+                    "homepage": "http://sowapps.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Orpheus Core",
+            "keywords": [
+                "core",
+                "orpheus"
+            ],
+            "time": "2016-06-28 10:39:42"
+        },
+        {
+            "name": "orpheus/orpheus-hook",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Sowapps/orpheus-hook.git",
+                "reference": "325a2823b8f9df2db7975b71855a1c706b2e241a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Sowapps/orpheus-hook/zipball/325a2823b8f9df2db7975b71855a1c706b2e241a",
+                "reference": "325a2823b8f9df2db7975b71855a1c706b2e241a",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Orpheus\\": "src"
+                },
+                "files": [
+                    "src/_loader.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Florent HAZARD",
+                    "email": "contact@sowapps.com",
+                    "homepage": "http://sowapps.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Orpheus Hook",
+            "homepage": "https://github.com/Sowapps/orpheus-hook",
+            "keywords": [
+                "HOOK",
+                "event",
+                "orpheus"
+            ],
+            "time": "2016-06-28 10:36:11"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "orpheus/orpheus-core": 20,
+        "orpheus/orpheus-hook": 20,
+        "orpheus/orpheus-cache": 20
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}
