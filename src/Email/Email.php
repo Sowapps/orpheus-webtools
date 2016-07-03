@@ -1,6 +1,6 @@
 <?php
 
-namespace Orpheus\Publisher\Email;
+namespace Orpheus\Email;
 
 /** The email class
  * This class is a tool to send mails.

@@ -1,6 +1,6 @@
 <?php
 
-namespace Orpheus\Publisher\Tool;
+namespace Orpheus\Publisher;
 
 class PasswordGenerator {
 
