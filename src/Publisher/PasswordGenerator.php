@@ -37,7 +37,7 @@ class PasswordGenerator {
 	 *
 	 * @param int $length
 	 * @param int $availables
-	 * @param int[] $forced
+	 * @param int[] $tokens
 	 * @return string
 	 */
 	public function generate($length=10, $availables=self::CHAR_ALPHADIGIT, array $tokens=array(self::CHAR_ALPHA, self::CHAR_DIGIT)) {
