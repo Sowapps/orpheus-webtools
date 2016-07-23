@@ -1,4 +1,7 @@
 <?php
+/**
+ * SlugGenerator
+ */
 
 namespace Orpheus\Publisher;
 
@@ -14,7 +17,7 @@ class SlugGenerator {
 	 * 
 	 * @var boolean $removeSpaces
 	 */
-	protected $removeSpaces		= false;
+	protected $removeSpaces = false;
 	
 	const LOWERCASE	= 0;
 	const CAMELCASE	= 1<<0;
@@ -26,7 +29,7 @@ class SlugGenerator {
 	 *
 	 * @var boolean $caseProcessing
 	 */
-	protected $caseProcessing	= self::UPPERCAMELCASE;
+	protected $caseProcessing = self::UPPERCAMELCASE;
 	
 	public function format($string) {
 		
@@ -51,6 +54,7 @@ class SlugGenerator {
 	}
 	
 	/**
+	 * Is this generator removing spaces ?
 	 * 
 	 * @return boolean
 	 */
@@ -59,6 +63,7 @@ class SlugGenerator {
 	}
 	
 	/**
+	 * Get is removing spaces
 	 * 
 	 * @return boolean
 	 */
@@ -67,6 +72,7 @@ class SlugGenerator {
 	}
 	
 	/**
+	 * Set removing spaces
 	 * 
 	 * @param boolean $removeSpaces
 	 * @return SlugGenerator
@@ -77,6 +83,7 @@ class SlugGenerator {
 	}
 
 	/**
+	 * Is this generator camel case processing ?
 	 *
 	 * @return boolean
 	 */
@@ -85,6 +92,7 @@ class SlugGenerator {
 	}
 	
 	/**
+	 * Get camel case processing
 	 * 
 	 * @return int
 	 */
@@ -93,6 +101,7 @@ class SlugGenerator {
 	}
 	
 	/**
+	 * Set camel case processing
 	 * 
 	 * @param int $caseProcessing
 	 * @return SlugGenerator

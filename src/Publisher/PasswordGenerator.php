@@ -1,11 +1,27 @@
 <?php
+/**
+ * PasswordGenerator
+ */
 
 namespace Orpheus\Publisher;
 
+/**
+ * The PasswordGenerator class
+ * 
+ * Class to generate random secured password
+ * 
+ * @author Florent Hazard <contact@sowapps.com>
+ *
+ */
 class PasswordGenerator {
-
+	
+	/**
+	 * The set of character we could require in password
+	 * 
+	 * @var array
+	 */
 	protected $primarySets	= array();
-
+	
 	const CHAR_ALPHA_LOWER	= 1;
 	const CHAR_ALPHA_UPPER	= 2;
 	const CHAR_DIGIT		= 4;
@@ -13,7 +29,10 @@ class PasswordGenerator {
 	const CHAR_ALPHA		= 3;//self::CHAR_ALPHA_LOWER|self::CHAR_ALPHA_UPPER;
 	const CHAR_ALPHADIGIT	= 7;//self::CHAR_ALPHA|self::CHAR_DIGIT;
 	const CHAR_ALL			= 15;//self::CHAR_ALPHADIGIT|self::CHAR_SYMBOL;
- 
+	
+	/**
+	 * Constructor
+	 */
 	public function __construct() {
 		$this->setPrimarySet(self::CHAR_ALPHA_LOWER, 'abcdefghijklmnopqrstuvwxyz');
 		$this->setPrimarySet(self::CHAR_ALPHA_UPPER, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
