@@ -31,6 +31,12 @@ class SlugGenerator {
 	 */
 	protected $caseProcessing = self::UPPERCAMELCASE;
 	
+	/**
+	 * Format the $string
+	 * 
+	 * @param string $string
+	 * @return 
+	 */
 	public function format($string) {
 		
 		$string = ucwords(str_replace('&', 'and', strtolower($string)));
