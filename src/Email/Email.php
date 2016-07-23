@@ -1,15 +1,23 @@
 <?php
+/**
+ * Email
+ */
 
 namespace Orpheus\Email;
 
-/** The email class
- * This class is a tool to send mails.
- * 	
- * Incompatible with Rev < 552
+/**
+ * The email class
+ * 
+ * This class is a tool to send mails
  */
 class Email {
-	//Attributes
-	private $Headers = array(
+	
+	/**
+	 * The mail headers
+	 * 
+	 * @var array
+	 */
+	private $headers = array(
 		'MIME-Version'	=> '',
 		'Content-Type'	=> 'text/plain, charset=UTF-8',
 		'Content-Transfer-Encoding'	=> '',
@@ -27,36 +35,73 @@ class Email {
 		'Bcc'	=> '',
 	);
 	
+	/**
+	 * The HTML body
+	 * 
+	 * @var string
+	 */
 	private $HTMLBody;
-	private $TEXTBody;
+	
+	/**
+	 * The text body
+	 * 
+	 * @var string
+	 */
+	private $tEXTBody;
+	
+	/**
+	 * The alternative body
+	 * 
+	 * @var string
+	 */
 	private $AltBody;
 	
-	/* Attached Files
-	Contains a list of file names
-	*/
+	/**
+	 * Attached files to mail
+	 * 
+	 * As list of filename 
+	 * 
+	 * @var array
+	 */
 	private $AttFiles = array();
+
+	/**
+	 * The mail subject
+	 *
+	 * @var string
+	 */
+	private $subject;
 	
-	private $Subject;
-	private $Type = 0;// Bit value, 1=>Text, 2=>HTML
+	/* *
+	 * Type of email
+	 * 
+	 * @var integer
+	 */
+// 	private $type = 0;// Bit value, 1=>Text, 2=>HTML
+	
+	/**
+	 * The mime boundary
+	 * 
+	 * @var array
+	 */
 	private $MIMEBoundary = array();
-	
-	public static $TEXTTYPE = 1;
-	public static $HTMLTYPE = 2;
 
 	//Methods
 	
-	/** Constructor
-	 * @param string $Subject The subject of the mail. Default value is an empty string.
-	 * @param string $Text The body of the message, used as text and html. Default value is an empty string.
+	/**
+	 * Constructor
+	 * 
+	 * @param string $subject The subject of the mail. Default value is an empty string.
+	 * @param string $text The body of the message, used as text and html. Default value is an empty string.
 	 */
-	public function __construct($Subject='', $Text='') { //Class' Constructor
+	public function __construct($subject='', $text='') { //Class' Constructor
 		$this->init();
-		$this->setSubject($Subject);
-		$this->setText($Text);
+		$this->setSubject($subject);
+		$this->setText($text);
 	}
 	
-	/** Initialize the object
-	 * 
+	/**
+	 * Initialize the object
 	 */
 	private function init() {
 		$this->Headers['Date'] = date('r');
@@ -76,47 +121,53 @@ class Email {
 		}
 	}
 	
-	/** Set the value of a header
-	 * @param string $Key The key of the header to set.
-	 * @param string $Value The new value of the header.
+	/**
+	 * Set the value of a header
+	 * 
+	 * @param string $key The key of the header to set.
+	 * @param string $value The new value of the header.
 	 */
-	public function setHeader($Key, $Value) {
-		if( !isset($this->Headers[$Key]) ) {
+	public function setHeader($key, $value) {
+		if( !isset($this->Headers[$key]) ) {
 			throw new \Exception('UnknownHeader');
 			return false;
 		}
-		$this->Headers[$Key] = $Value;
+		$this->Headers[$key] = $value;
 	}
 	
-	/** Set the type of the mail
-	 * @param integer $Type The new Type.
+	/* * Set the type of the mail
+	 * @param integer $type The new Type.
 	 * 
 	 * Set the type of the mail.
 	 * It can be TEXTTYPE or HTMLTYPE. 
 	 */
-	public function setType($Type) {
-		$Type = (int) $Type;
-		if( $Type < 0 ) {
-			$Substract = 1;
-			$Type = -$Type;
-		}
-		if( !($Type & self::TEXTTYPE) && !($Type & self::HTMLTYPE) ) {
-			throw new \Exception('InvalidType');
-			return;
-		}
-		$this->Type = ( empty($Substract) ) ? $this->Type | $Type : $this->Type ^ $Type;
-	}
+// 	public function setType($type) {
+// 		$type = (int) $type;
+// 		if( $type < 0 ) {
+// 			$substract = 1;
+// 			$type = -$type;
+// 		}
+// 		if( !($type & self::TEXTTYPE) && !($type & self::HTMLTYPE) ) {
+// 			throw new \Exception('InvalidType');
+// 			return;
+// 		}
+// 		$this->Type = ( empty($substract) ) ? $this->Type | $type : $this->Type ^ $type;
+// 	}
 	
-	/** Check if this file is in the files list
-	 * @param string $Filename The file name.
-	 * @return boolean True if this file is in the attached files list.
+	/**
+	 * Check if this file is in the files list
+	 * 
+	 * @param string $filename The file name
+	 * @return boolean True if this file is in the attached files list
 	 */
-	public function containsFile($Filename) {
-		return in_array($Filename, $this->AttFiles);
+	public function containsFile($filename) {
+		return in_array($filename, $this->AttFiles);
 	}
 	
-	/** Check if the file list contains any file.
-	 * @return boolean True if the file list is not empty.
+	/**
+	 * Check if the file list contains any file
+	 * 
+	 * @return boolean True if the file list is not empty
 	 * 
 	 * Check if the file list is not empty.
 	 */
@@ -124,132 +175,154 @@ class Email {
 		return !empty($this->AttFiles);
 	}
 	
-	/** Add a file to the files list
-	 * @param string $Filename The file name.
+	/**
+	 * Add a file to the files list
 	 * 
-	 * Add $Filename to the attached files list.
+	 * @param string $filename The file name
+	 * 
+	 * Add $filename to the attached files list.
 	 */
-	public function addFile($Filename) {
-		if( $this->containsFile($Filename) ) {
+	public function addFile($filename) {
+		if( $this->containsFile($filename) ) {
 			throw new \Exception('FileAlreadyContained');
 		}
-		$this->AttFiles[] = $Filename;
+		$this->AttFiles[] = $filename;
 	}
 	
-	/** Remove a file from the files list
-	 * @param string $Filename The file name.
+	/**
+	 * Remove a file from the files list
 	 * 
-	 * Remove $Filename from the attached files list.
+	 * @param string $filename The file name
+	 * 
+	 * Remove $filename from the attached files list.
 	 */
-	public function removeFile($Filename) {
-		if( ($key = array_search($Filename, $this->AttFiles)) === false ) {
+	public function removeFile($filename) {
+		if( ($key = array_search($filename, $this->AttFiles)) === false ) {
 			throw new \Exception('FileNotContained');
 		}
 		unset($this->AttFiles[$key]);
 	}
 	
-	/** Set the subject of the mail
-	 * @param string $Subject The new subject.
+	/**
+	 * Set the subject of the mail
+	 * 
+	 * @param string $subject The new subject
 	 */
-	public function setSubject($Subject) {
-// 		if( !is_string($Subject) ) {
-// 			throw new \Exception('RequireStringParameter');
-// 		}
-// 		$this->Subject = '=?UTF-8?Q?'.static::escape($Subject).'?=';// Supports UTF-8 and Quote printable encoding
+	public function setSubject($subject) {
 		// If subject is too long, QP returns a bad string, it's working with b64.
-		$this->Subject	= static::escapeB64($Subject);// Supports UTF-8
-// 		log_debug("Convert utf8 subject from {$Subject} to {$this->Subject}");
+		$this->Subject	= static::escapeB64($subject);// Supports UTF-8
 	}
 	
-	/** Sets the text body of the mail
-	 * @param string $Body The new body.
+	/**
+	 * Set the text body of the mail
+	 * 
+	 * @param string $body The new body
 	 */
-	public function setTEXTBody($Body) {
-		if( !is_string($Body) ) {
+	public function setTEXTBody($body) {
+		if( !is_string($body) ) {
 			throw new \Exception('RequireStringParameter');
 		}
-		$this->TEXTBody = static::escape($Body);
+		$this->TEXTBody = static::escape($body);
 	}
 
-	/** Sets the html body of the mail
-	 * @param string $Body The new body.
+	/**
+	 * Set the html body of the mail
+	 * 
+	 * @param string $body The new body
 	 */
-	public function setHTMLBody($Body) {
-		if( !is_string($Body) ) {
+	public function setHTMLBody($body) {
+		if( !is_string($body) ) {
 			throw new \Exception('RequireStringParameter');
 		}
-		$this->HTMLBody	= static::convHTMLBody($Body);
-	}
-	protected static function convHTMLBody($Body) {
-		// Supports UTF-8 and Quote printable encoding
-		return static::escape(str_replace(array("\r", "\n"), '', '<div dir="ltr">'.$Body.'</div>'));
+		$this->HTMLBody	= static::convHTMLBody($body);
 	}
 	
-	/** Sets the mail content
-	 * @param string $Text The new text for the mail contents.
+	/**
+	 * Convert body to email-compliant HTML
+	 * 
+	 * @param string $body
+	 * @return string
+	 */
+	protected static function convHTMLBody($body) {
+		// Supports UTF-8 and Quote printable encoding
+		return static::escape(str_replace(array("\r", "\n"), '', '<div dir="ltr">'.$body.'</div>'));
+	}
+	
+	/**
+	 * Set the mail content
+	 * 
+	 * @param string $text The new text for the mail contents
 	 * 
 	 * Fills Text and HTML bodies from the given text
 	 */
-	public function setText($Text) {
-		if( !is_string($Text) ) {
+	public function setText($text) {
+		if( !is_string($text) ) {
 			throw new \Exception('RequireStringParameter');
 		}
-		$this->setTEXTBody(strip_tags($Text));
-		$this->setHTMLBody(nl2br($Text));
+		$this->setTEXTBody(strip_tags($text));
+		$this->setHTMLBody(nl2br($text));
 	}
 	
-	/** Sets the alternative body of the mail
-	 * @param string $Body The new body.
+	/**
+	 * Set the alternative body of the mail
+	 * 
+	 * @param string $body The new body.
 	 */
-	public function setAltBody($Body) {
-		if( !is_string($Body) ) {
+	public function setAltBody($body) {
+		if( !is_string($body) ) {
 			throw new \Exception('RequireStringParameter');
 		}
-		$this->AltBody = $Body;
+		$this->AltBody = $body;
 	}
 	
-	/** Sets the ReplyTo value of the mail
-	 * @param string $Email The email address to send this mail
+	/**
+	 * Set the ReplyTo value of the mail
+	 * 
+	 * @param string $email The email address to send this mail
 	 */
-	public function setReplyTo($Email) {
-		$this->setHeader('Return-Path', $Email);
-		$this->setHeader('Reply-To', $Email);
+	public function setReplyTo($email) {
+		$this->setHeader('Return-Path', $email);
+		$this->setHeader('Reply-To', $email);
 	}
 	
-	/** Sets the Sender value of the mail
-	 * @param string	$SenderEmail The email address to send this mail
-	 * @param string	$SenderName The email address to send this mail. Default value is null.
+	/**
+	 * Set the Sender value of the mail
+	 * 
+	 * @param string	$senderEmail The email address to send this mail
+	 * @param string	$senderName The email address to send this mail. Default value is null.
 	 * @param boolean	$allowReply True to use this address as reply address. Default value is true.
 	 * 
-	 * Sets the Sender value of the mail.
+	 * Set the Sender value of the mail.
 	 * This function also sets the ReplyTo value if undefined.
 	 * If a sender name is provided, it sets the "From" header to NOM \<EMAIL\>
 	 */
-	public function setSender($SenderEmail, $SenderName=null, $allowReply=true) {
+	public function setSender($senderEmail, $senderName=null, $allowReply=true) {
 		//=?utf-8?b?".base64_encode($from_name)."?= <".$from_a.">\r\n
-		$this->setHeader('From', $SenderName===NULL ? $SenderEmail : static::escapeB64($SenderName).' <'.$SenderEmail.'>');
-		$this->setHeader('Sender', $SenderEmail);
+		$this->setHeader('From', $senderName===NULL ? $senderEmail : static::escapeB64($senderName).' <'.$senderEmail.'>');
+		$this->setHeader('Sender', $senderEmail);
 		if( $allowReply && empty($this->Headers['Return-Path']) ) {
-			$this->setReplyTo($SenderEmail);
+			$this->setReplyTo($senderEmail);
 		}
 	}
 	
-	/** Sends the mail to the given address
-	 * @param string $ToAddress The email address to send this mail
+	/**
+	 * Send the mail to the given address
 	 * 
-	 * Sends the mail to the given address.
+	 * @param string $toAddress The email address to send this mail
+	 * 
+	 * Send the mail to the given address.
 	 * You can pass an array of address to send it to multiple recipients.
 	 */
-	public function send($ToAddress) {
-		if( empty($ToAddress) || (!self::is_email($ToAddress) && !is_array($ToAddress)) ) {
+	public function send($toAddress) {
+		if( empty($toAddress) || (!self::is_email($toAddress) && !is_array($toAddress)) ) {
 			throw new \Exception('InvalidEmailAddress');
 		}
 		
 		if( $this->isMultiContent() ) {
-			$Boundary = $this->getBoundary();
+			$boundary = $this->getBoundary();
 			$this->setHeader('MIME-Version', '1.0');
-			$this->setHeader('Content-Type', "multipart/alternative; boundary=\"{$Boundary}\"");
-			$Body = '';
+			$this->setHeader('Content-Type', "multipart/alternative; boundary=\"{$boundary}\"");
+			$body = '';
 			$ContentsArr = array();
 			if( $this->isAlternative() ) {
 				$ContentsArr[] = array(
@@ -281,7 +354,7 @@ class Email {
 			}
 			
 			if( $this->containsFiles() ) {
-				$this->setHeader('Content-Type', "multipart/mixed; boundary=\"{$Boundary}\"");
+				$this->setHeader('Content-Type', "multipart/mixed; boundary=\"{$boundary}\"");
 				
 				//With files, mail content is overloaded, also we make a blocklist under a bloc with own boundary.
 				$subContentsArr = $ContentsArr;
@@ -327,7 +400,7 @@ BODY;
 				}
 			}
 			if( !empty($ContentsArr) ) {
-				$Body = '';
+				$body = '';
 				
 				foreach($ContentsArr as $Content) {
 					$ContentHeaders = '';
@@ -341,12 +414,12 @@ BODY;
 					foreach( $Content['headers'] as $headerName => $headerValue ) {
 						$ContentHeaders .= "{$headerName}: {$headerValue}\r\n";
 					}
-					$Body .= <<<BODY
---{$Boundary}\r\n{$ContentHeaders}\r\n{$Content['body']}\r\n\r\n
+					$body .= <<<BODY
+--{$boundary}\r\n{$ContentHeaders}\r\n{$Content['body']}\r\n\r\n
 BODY;
 				}
-				$Body .= <<<BODY
---{$Boundary}--
+				$body .= <<<BODY
+--{$boundary}--
 BODY;
 			}
 			
@@ -355,32 +428,32 @@ BODY;
 				$this->setHeader('MIME-Version', '1.0');
 				$this->setHeader('Content-Type', 'text/html; charset="UTF-8"');
 				$this->setHeader('Content-Transfer-Encoding', 'quoted-printable');
-				$Body = $this->HTMLBody;
+				$body = $this->HTMLBody;
 			
 			} else if( $this->isTEXT() ) {
 				$this->setHeader('MIME-Version', '');
 				$this->setHeader('Content-Type', 'text/plain; charset="UTF-8"');
 				$this->setHeader('Content-Transfer-Encoding', 'quoted-printable');
-				$Body = $this->TEXTBody;
+				$body = $this->TEXTBody;
 			}
 		}
-		if( empty($Body) ) {
+		if( empty($body) ) {
 			throw new \Exception('emptyMailBody');
 		}
 		
-		$Headers = '';
+		$headers = '';
 		foreach( $this->Headers as $headerName => $headerValue ) {
 			if( !empty($headerValue) ) {
-				$Headers .= "{$headerName}: {$headerValue}\r\n";
+				$headers .= "{$headerName}: {$headerValue}\r\n";
 			}
 		}
-		$Headers .= "\r\n";
-		if( !is_array($ToAddress) ) {
-			if( !mail($ToAddress, $this->Subject, $Body, $Headers) ) {
+		$headers .= "\r\n";
+		if( !is_array($toAddress) ) {
+			if( !mail($toAddress, $this->Subject, $body, $headers) ) {
 				throw new \Exception("issueSendingEmail");
 			}
 		} else {
-			foreach(array_unique($ToAddress) as $MailToData) {
+			foreach(array_unique($toAddress) as $MailToData) {
 				$MailToEmail = '';
 				if( self::is_email($MailToData) ) {
 					$MailToEmail = $MailToData;
@@ -396,7 +469,7 @@ BODY;
 				if( empty($MailToEmail) ) { continue; }
 // 					throw new \Exception("EmptyEmailAddress");
 
-				if( !mail($MailToEmail, $this->Subject, $Body, $Headers)) {
+				if( !mail($MailToEmail, $this->Subject, $body, $headers)) {
 					throw new \Exception('issueSendingEmail');
 				}
 			}
@@ -404,78 +477,96 @@ BODY;
 		return true;
 	}
 	
-	/** Get a boundary
-	 * @param integer $BoundaryInd The index of the boundary to get. Default value is 0.
+	/**
+	 * Get a boundary
+	 * 
+	 * @param integer $boundaryInd The index of the boundary to get. Default value is 0.
 	 * @return string The value of the boundary.
 	 */
-	public function getBoundary($BoundaryInd=0) {
-		if( empty($this->MIMEBoundary[$BoundaryInd]) ) {
-			$this->MIMEBoundary[$BoundaryInd]	= 'ORPHEUS_'.md5(microtime(1)+$BoundaryInd);
-// 			$this->MIMEBoundary[$BoundaryInd] = '-=%ORPHEUS_'.md5(microtime(1)+$BoundaryInd).'%=-';
+	public function getBoundary($boundaryInd=0) {
+		if( empty($this->MIMEBoundary[$boundaryInd]) ) {
+			$this->MIMEBoundary[$boundaryInd]	= 'ORPHEUS_'.md5(microtime(1)+$boundaryInd);
+// 			$this->MIMEBoundary[$boundaryInd] = '-=%ORPHEUS_'.md5(microtime(1)+$boundaryInd).'%=-';
 		}
-		return $this->MIMEBoundary[$BoundaryInd];
+		return $this->MIMEBoundary[$boundaryInd];
 	}
 	
-	/** Check if this mail is a HTML mail
-	 * @return boolean True if this object has a HTML message.
+	/**
+	 * Check if this mail is a HTML mail
+	 * 
+	 * @return boolean True if this object has a HTML message
 	 */
 	public function isHTML() {
 		return !empty($this->HTMLBody);
 	}
 	
-	/** Check if this mail is a TEXT mail
-	 * @return boolean True if this object has a TEXT message.
+	/**
+	 * Check if this mail is a TEXT mail
+	 * 
+	 * @return boolean True if this object has a TEXT message
 	 */
 	public function isTEXT() {
 		return !empty($this->TEXTBody);
 	}
 	
-	/** Check if this mail is an alternative mail
-	 * @return boolean True if this object has an alternative message.
+	/**
+	 * Check if this mail is an alternative mail
+	 * 
+	 * @return boolean True if this object has an alternative message
 	 */
 	public function isAlternative() {
 		return !empty($this->AltBody);
 	}
 	
-	/** Check if this mail contains mutiple contents
-	 * @return boolean True if this object contains multiple contents.
+	/**
+	 * Check if this mail contains mutiple contents
+	 * 
+	 * @return boolean True if this object contains multiple contents
 	 */
 	public function isMultiContent() {
 		return ( $this->isHTML() + $this->isTEXT() + $this->containsFiles() ) > 1;
 	}
 	
-	/** Check if the given mail address is valid
-	 * @param string $email The email address.
-	 * @return boolean True if this email is valid.
+	/**
+	 * Check if the given mail address is valid
+	 * 
+	 * @param string $email The email address
+	 * @return boolean True if this email is valid
 	 */
 	public static function is_email($email) {
 		return is_email($email);
 	}
 
-	/** Gets the mime type of a file.
-	 * @param string $Filename The file name.
-	 * @return string The mime type of the file.
+	/**
+	 * Get the mime type of a file
+	 * 
+	 * @param string $filename The file name
+	 * @return string The mime type of the file
 	 */
-	public static function getMimeType($Filename) {
+	public static function getMimeType($filename) {
 		if( function_exists('finfo_open') ) {
 			$finfo = finfo_open(FILEINFO_MIME_TYPE);
-			return finfo_file($finfo, $Filename);
+			return finfo_file($finfo, $filename);
 		}
-		return mime_content_type($Filename);
+		return mime_content_type($filename);
 	}
 
-	/** Escape the string for mails.
-	 * @param string $string The string to escape.
-	 * @return string The escaped string for mails.
+	/**
+	 * Escape the string for mails
+	 * 
+	 * @param string $string The string to escape
+	 * @return string The escaped string for mails
 	 */
 	public static function escape($string) {
 		//It seems that utf8_encode() is not sufficient, it does not work, but UTF-8 do.
 		return quoted_printable_encode(( mb_detect_encoding($string, 'UTF-8') === 'UTF-8' ) ? $string : utf8_encode($string));
 	}
 
-	/** Escape the string using base64 encoding.
-	 * @param	string $string The string to escape.
-	 * @return	string The escaped string in base64.
+	/**
+	 * Escape the string using base64 encoding
+	 * 
+	 * @param	string $string The string to escape
+	 * @return	string The escaped string in base64
 	 */
 	public static function escapeB64($string) {
 		return '=?UTF-8?B?'.base64_encode("$string").'?=';

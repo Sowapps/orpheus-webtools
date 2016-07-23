@@ -1,20 +1,77 @@
 <?php
+/**
+ * UploadedFile
+ */
 
 namespace Orpheus\File;
 
 use Orpheus\Exception\UserException;
 
+/**
+ * The UploadedFile class
+ * 
+ * @author Florent Hazard <contact@sowapps.com>
+ *
+ */
 class UploadedFile {
 	
+	/**
+	 * The file name
+	 * 
+	 * @var string
+	 */
 	protected $fileName;
+	
+	/**
+	 * The file size
+	 * 
+	 * @var int
+	 */
 	protected $fileSize;
+	
+	/**
+	 * The file temp path
+	 * 
+	 * @var string
+	 */
 	protected $tempPath;
+	
+	/**
+	 * The file uploading error
+	 * 
+	 * @var int
+	 */
 	protected $error;
 	
+	/**
+	 * Allowed extension to upload
+	 * 
+	 * @var array
+	 */
 	public $allowedExtensions;
+	
+	/**
+	 * Allowed mime types to upload
+	 * 
+	 * @var array
+	 */
 	public $allowedMimeTypes;
+	
+	/**
+	 * Allowed type to upload
+	 * 
+	 * @var array
+	 */
 	public $type;
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param string $fileName
+	 * @param int $fileSize
+	 * @param string $tempPath
+	 * @param int $error
+	 */
 	public function __construct($fileName, $fileSize, $tempPath, $error) {
 		$this->fileName	= $fileName;
 		$this->fileSize	= $fileSize;
@@ -22,48 +79,106 @@ class UploadedFile {
 		$this->error	= $error;
 	}
 	
+	/**
+	 * Get the uploaded file (file name) as string
+	 * 
+	 * @return string
+	 */
 	public function __toString() {
 		return $this->getFileName();
 	}
 	
+	/**
+	 * Get the file name
+	 * 
+	 * @return string
+	 */
 	public function getFileName() {
 		return $this->fileName;
 	}
 	
+	/**
+	 * Get the file basename
+	 * 
+	 * @return string
+	 */
 	public function getBaseName() {
 		return basename($this->fileName);
 	}
 	
+	/**
+	 * Get the file size
+	 * 
+	 * @return number
+	 */
 	public function getFileSize() {
 		return $this->fileSize;
 	}
 	
+	/**
+	 * Get temporarily path to file
+	 * 
+	 * @return string
+	 */
 	public function getTempPath() {
 		return $this->tempPath;
 	}
 	
+	/**
+	 * Get the file mime type
+	 * 
+	 * @return string
+	 */
 	public function getMIMEType() {
 		return getMimeType($this->tempPath);
 	}
 	
+	/**
+	 * Get the type of the file from its mimetype
+	 * 
+	 * return string
+	 */
 	public function getType() {
 // 		list($type, $other)	= explodeList('/', $this->getMIMEType(), 2);
 		list($type,) = explodeList('/', $this->getMIMEType(), 2);
 		return $type;
 	}
 	
+	/**
+	 * Get the file extension
+	 * 
+	 * @return string
+	 */
 	public function getExtension() {
 		return strtolower(pathinfo($this->fileName, PATHINFO_EXTENSION));
 	}
 	
+	/**
+	 * Get the upload error
+	 * 
+	 * @return int
+	 */
 	public function getError() {
 		return $this->error;
 	}
 	
+	/**
+	 * Move the file to $path
+	 * 
+	 * @param string $path
+	 * @return boolean
+	 */
 	public function moveTo($path) {
 		return move_uploaded_file($this->getTempPath(), $path);
 	}
 	
+	/**
+	 * Validate the input file is respecting upload restrictions
+	 * 
+	 * @throws UserException
+	 * 
+	 * This function throws exception in case of error
+	 */
 	public function validate() {
 		if( $this->error ) {
 			switch( $this->error ) {
@@ -106,6 +221,14 @@ class UploadedFile {
 		}
 	}
 	
+	/**
+	 * Get uploaded file from path
+	 * 
+	 * @param array $from
+	 * @param array $files
+	 * @param string $path
+	 * @return UploadedFile
+	 */
 	protected static function loadPath($from, &$files=array(), $path='') {
 		$fileName = ($path === '') ? $from['name'] : apath_get($from['name'], $path);
 // 		debug('LoadPath('.$path.') - $fileName', $fileName);
@@ -126,6 +249,8 @@ class UploadedFile {
 	}
 
 	/**
+	 * Load file from input $name
+	 * 
 	 * @param string $name
 	 * @return UploadedFile
 	 */
