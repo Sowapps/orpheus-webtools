@@ -36,9 +36,6 @@ class AppConfig {
 		$this->path = defined('STOREPATH') ? STOREPATH.'config.json' : null;
 		$this->data	= array();
 		$this->loadSmartly();
-// 		if( $this->path && is_readable($this->path) ) {
-// 			$this->data	= json_decode(file_get_contents($this->path), true);
-// 		}
 	}
 	
 	/**
@@ -170,9 +167,9 @@ class AppConfig {
 	
 	/**
 	 * Set the path
-	 * 
+	 *
 	 * @param string $path
-	 * @return \Orpheus\Config\AppConfig
+	 * @return $this
 	 */
 	public function setPath($path) {
 		$this->path = $path;
@@ -190,9 +187,9 @@ class AppConfig {
 	
 	/**
 	 * Set the data
-	 * 
+	 *
 	 * @param array $data
-	 * @return \Orpheus\Config\AppConfig
+	 * @return $this
 	 */
 	public function setData($data) {
 		$this->data = $data;
