@@ -7,14 +7,14 @@ namespace Orpheus\Publisher;
 
 /**
  * The Slug Generator class
- * 
+ *
  * This class generate slug
-*/
+ */
 class SlugGenerator {
 	
 	/**
 	 * Should remove space instead of replacing them
-	 * 
+	 *
 	 * @var boolean $removeSpaces
 	 */
 	protected $removeSpaces = false;
@@ -23,7 +23,7 @@ class SlugGenerator {
 	const CAMELCASE	= 1<<0;
 	const LOWERCAMELCASE	= self::CAMELCASE;
 	const UPPERCAMELCASE	= self::CAMELCASE | 1<<1;
-
+	
 	/**
 	 * How to process word case
 	 *
@@ -33,22 +33,25 @@ class SlugGenerator {
 	
 	/**
 	 * Format the $string
-	 * 
+	 *
 	 * @param string $string
-	 * @return 
+	 * @return
 	 */
 	public function format($string) {
 		
 		$string = ucwords(str_replace('&', 'and', strtolower($string)));
 		
 		if( $this->isRemovingSpaces() ) {
-			$string	= str_replace(' ', '', $string);
+			$string = str_replace(' ', '', $string);
 		}
 		
-		$string	= strtr($string, ' .\'"', '----');
-		if( $this->caseProcessing ) {
+		$string = strtr($string, ' .\'"', '----');
+		if( $this->caseProcessing !== null ) {
+			if( $this->caseProcessing === self::LOWERCASE ) {
+				$string = strtolower($string);
+			}
 			if( $this->isCamelCaseProcessing() ) {
-				if( $this->caseProcessing == self::LOWERCAMELCASE ) {
+				if( $this->caseProcessing === self::LOWERCAMELCASE ) {
 					$string = lcfirst($string);
 					// } else
 					// if( $case == UPPERCAMELCASE ) {
@@ -61,7 +64,7 @@ class SlugGenerator {
 	
 	/**
 	 * Is this generator removing spaces ?
-	 * 
+	 *
 	 * @return boolean
 	 */
 	public function isRemovingSpaces() {
@@ -70,7 +73,7 @@ class SlugGenerator {
 	
 	/**
 	 * Get is removing spaces
-	 * 
+	 *
 	 * @return boolean
 	 */
 	public function getRemoveSpaces() {
@@ -79,7 +82,7 @@ class SlugGenerator {
 	
 	/**
 	 * Set removing spaces
-	 * 
+	 *
 	 * @param boolean $removeSpaces
 	 * @return SlugGenerator
 	 */
@@ -87,7 +90,7 @@ class SlugGenerator {
 		$this->removeSpaces = $removeSpaces;
 		return $this;
 	}
-
+	
 	/**
 	 * Is this generator camel case processing ?
 	 *
@@ -99,7 +102,7 @@ class SlugGenerator {
 	
 	/**
 	 * Get camel case processing
-	 * 
+	 *
 	 * @return int
 	 */
 	public function getCaseProcessing() {
@@ -108,7 +111,7 @@ class SlugGenerator {
 	
 	/**
 	 * Set camel case processing
-	 * 
+	 *
 	 * @param int $caseProcessing
 	 * @return SlugGenerator
 	 */
