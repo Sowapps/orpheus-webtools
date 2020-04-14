@@ -73,7 +73,7 @@ class AppConfig {
 			$this->data = $jsonConfig->data;
 		} else {
 			// BC with old format
-			$this->data = $jsonConfig;
+			$this->data = (array) $jsonConfig;
 		}
 	}
 	
