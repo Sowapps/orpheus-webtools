@@ -12,24 +12,31 @@ namespace Orpheus\Publisher;
  */
 class SlugGenerator {
 	
+	const CASE_LOWER = 0;
+	const CASE_CAMEL = 1 << 0;
+	const CASE_CAMEL_LOWER = self::CASE_CAMEL;
+	const CASE_CAMEL_UPPER = self::CASE_CAMEL | 1 << 1;
+	
 	/**
 	 * Should remove space instead of replacing them
 	 *
-	 * @var boolean $removeSpaces
+	 * @var boolean
 	 */
-	protected $removeSpaces = false;
+	protected bool $removeSpaces = false;
 	
-	const LOWERCASE	= 0;
-	const CAMELCASE	= 1<<0;
-	const LOWERCAMELCASE	= self::CAMELCASE;
-	const UPPERCAMELCASE	= self::CAMELCASE | 1<<1;
+	/**
+	 * Max length to truncate
+	 *
+	 * @var int|null
+	 */
+	protected ?int $maxLength = null;
 	
 	/**
 	 * How to process word case
 	 *
-	 * @var boolean $caseProcessing
+	 * @var boolean
 	 */
-	protected $caseProcessing = self::UPPERCAMELCASE;
+	protected int $caseProcessing = self::CASE_CAMEL_UPPER;
 	
 	/**
 	 * Format the $string
@@ -47,11 +54,11 @@ class SlugGenerator {
 		
 		$string = strtr($string, ' .\'"', '----');
 		if( $this->caseProcessing !== null ) {
-			if( $this->caseProcessing === self::LOWERCASE ) {
+			if( $this->caseProcessing === self::CASE_LOWER ) {
 				$string = strtolower($string);
 			}
 			if( $this->isCamelCaseProcessing() ) {
-				if( $this->caseProcessing === self::LOWERCAMELCASE ) {
+				if( $this->caseProcessing === self::CASE_CAMEL_LOWER ) {
 					$string = lcfirst($string);
 					// } else
 					// if( $case == UPPERCAMELCASE ) {
@@ -59,7 +66,13 @@ class SlugGenerator {
 				}
 			}
 		}
-		return convertSpecialChars($string);
+		$string = convertSpecialChars($string);
+		
+		if( $this->getMaxLength() !== null ) {
+			$string = substr($string, 0, $this->getMaxLength());
+		}
+		
+		return $string;
 	}
 	
 	/**
@@ -69,6 +82,15 @@ class SlugGenerator {
 	 */
 	public function isRemovingSpaces() {
 		return $this->removeSpaces;
+	}
+	
+	/**
+	 * Is this generator camel case processing ?
+	 *
+	 * @return boolean
+	 */
+	public function isCamelCaseProcessing() {
+		return bintest($this->caseProcessing, CAMELCASE);
 	}
 	
 	/**
@@ -86,18 +108,10 @@ class SlugGenerator {
 	 * @param boolean $removeSpaces
 	 * @return SlugGenerator
 	 */
-	public function setRemoveSpaces($removeSpaces=true) {
+	public function setRemoveSpaces($removeSpaces = true) {
 		$this->removeSpaces = $removeSpaces;
+		
 		return $this;
-	}
-	
-	/**
-	 * Is this generator camel case processing ?
-	 *
-	 * @return boolean
-	 */
-	public function isCamelCaseProcessing() {
-		return bintest($this->caseProcessing, CAMELCASE);
 	}
 	
 	/**
@@ -117,9 +131,24 @@ class SlugGenerator {
 	 */
 	public function setCaseProcessing($caseProcessing) {
 		$this->caseProcessing = $caseProcessing;
+		
 		return $this;
 	}
 	
+	/**
+	 * @return int|null
+	 */
+	public function getMaxLength(): ?int {
+		return $this->maxLength;
+	}
 	
+	/**
+	 * @param int|null $maxLength
+	 */
+	public function setMaxLength(?int $maxLength): self {
+		$this->maxLength = $maxLength;
+		
+		return $this;
+	}
 	
 }
