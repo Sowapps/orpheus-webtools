@@ -6,6 +6,7 @@
 namespace Orpheus\File;
 
 use Orpheus\Exception\UserException;
+use SplFileInfo;
 
 /**
  * The UploadedFile class
@@ -220,6 +221,15 @@ class UploadedFile {
 	 */
 	public function getExtension() {
 		return strtolower(pathinfo($this->fileName, PATHINFO_EXTENSION));
+	}
+	
+	/**
+	 * Get SplFileInfo object for this file
+	 *
+	 * @return SplFileInfo
+	 */
+	public function getSplFileInfo() {
+		return new SplFileInfo($this->getTempPath());
 	}
 	
 	/**
