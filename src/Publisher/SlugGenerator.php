@@ -72,12 +72,13 @@ class SlugGenerator {
 			}
 		}
 		
+		// As last change, remove duplicate hyphens
+		$string = trim(preg_replace('#\-+#', '-', $string), '-');
+		
+		// After all changes, we truncate the string if over max length
 		if( $this->getMaxLength() !== null ) {
 			$string = substr($string, 0, $this->getMaxLength());
 		}
-		
-		// At the end, remove duplicate hyphens
-		$string = trim(preg_replace('#\-+#', '-', $string), '-');
 		
 		return $string;
 	}
