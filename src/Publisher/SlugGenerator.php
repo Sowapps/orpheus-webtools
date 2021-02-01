@@ -45,6 +45,7 @@ class SlugGenerator {
 	 * @return
 	 */
 	public function format($string) {
+		// Order is very important
 		
 		$string = ucwords(str_replace('&', 'and', strtolower($string)));
 		
@@ -53,6 +54,10 @@ class SlugGenerator {
 		}
 		
 		$string = strtr($string, ' .\'"', '----');
+		
+		// This function convert also spaces into underscore, behavior we don't want here, so spaces should be removed before
+		$string = convertSpecialChars($string);
+		
 		if( $this->caseProcessing !== null ) {
 			if( $this->caseProcessing === self::CASE_LOWER ) {
 				$string = strtolower($string);
@@ -66,11 +71,13 @@ class SlugGenerator {
 				}
 			}
 		}
-		$string = convertSpecialChars($string);
 		
 		if( $this->getMaxLength() !== null ) {
 			$string = substr($string, 0, $this->getMaxLength());
 		}
+		
+		// At the end, remove duplicate hyphens
+		$string = trim(preg_replace('#\-+#', '-', $string), '-');
 		
 		return $string;
 	}
@@ -91,6 +98,22 @@ class SlugGenerator {
 	 */
 	public function isCamelCaseProcessing() {
 		return bintest($this->caseProcessing, CAMELCASE);
+	}
+	
+	/**
+	 * @return int|null
+	 */
+	public function getMaxLength(): ?int {
+		return $this->maxLength;
+	}
+	
+	/**
+	 * @param int|null $maxLength
+	 */
+	public function setMaxLength(?int $maxLength): self {
+		$this->maxLength = $maxLength;
+		
+		return $this;
 	}
 	
 	/**
@@ -131,22 +154,6 @@ class SlugGenerator {
 	 */
 	public function setCaseProcessing($caseProcessing) {
 		$this->caseProcessing = $caseProcessing;
-		
-		return $this;
-	}
-	
-	/**
-	 * @return int|null
-	 */
-	public function getMaxLength(): ?int {
-		return $this->maxLength;
-	}
-	
-	/**
-	 * @param int|null $maxLength
-	 */
-	public function setMaxLength(?int $maxLength): self {
-		$this->maxLength = $maxLength;
 		
 		return $this;
 	}
