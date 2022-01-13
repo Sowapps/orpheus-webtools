@@ -21,14 +21,14 @@ class UploadedFile {
 	 *
 	 * @var array
 	 */
-	public $allowedExtensions;
+	public ?array $allowedExtensions = null;
 	
 	/**
 	 * Allowed mime types to upload
 	 *
 	 * @var array
 	 */
-	public $allowedMimeTypes;
+	public ?array $allowedMimeTypes = null;
 	
 	/**
 	 * Allowed type to upload
@@ -183,13 +183,13 @@ class UploadedFile {
 		}
 		if( $this->allowedExtensions !== null ) {
 			$ext = $this->getExtension();
-			if( $ext === $this->allowedExtensions || (is_array($this->allowedExtensions) && !in_array($ext, $this->allowedExtensions)) ) {
+			if( in_array($ext, $this->allowedExtensions) || (is_array($this->allowedExtensions) && !in_array($ext, $this->allowedExtensions)) ) {
 				throw new UserException('invalidExtension');
 			}
 		}
 		if( $this->allowedMimeTypes !== null ) {
 			$mt = $this->getMIMEType();
-			if( $mt === $this->allowedMimeTypes || (is_array($this->allowedMimeTypes) && !in_array($mt, $this->allowedMimeTypes)) ) {
+			if( in_array($mt, $this->allowedMimeTypes) || (is_array($this->allowedMimeTypes) && !in_array($mt, $this->allowedMimeTypes)) ) {
 				throw new UserException('invalidMimeType');
 			}
 		}
