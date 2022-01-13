@@ -4,7 +4,7 @@ namespace Orpheus\Publisher;
 
 use Exception;
 use Orpheus\Rendering\HTMLRendering;
-use Orpheus\SQLRequest\SQLSelectRequest;
+use Orpheus\SqlRequest\SqlSelectRequest;
 
 /**
  * Class Paginator
@@ -18,7 +18,7 @@ class Paginator implements \IteratorAggregate {
 	/** @var string */
 	protected $url;
 	
-	/** @var SQLSelectRequest */
+	/** @var SqlSelectRequest */
 	protected $query;
 	
 	/** @var int */
@@ -200,18 +200,19 @@ class Paginator implements \IteratorAggregate {
 	}
 	
 	/**
-	 * @return SQLSelectRequest
+	 * @return SqlSelectRequest
 	 */
 	public function getQuery() {
 		return $this->query;
 	}
 	
 	/**
-	 * @param SQLSelectRequest
+	 * @param SqlSelectRequest
 	 */
-	public function setQuery(SQLSelectRequest $query) {
+	public function setQuery(SqlSelectRequest $query) {
 		$this->query = $query;
 		$this->rowCount = $this->query->count();
+		
 		return $this;
 	}
 }
