@@ -183,13 +183,13 @@ class UploadedFile {
 		}
 		if( $this->allowedExtensions !== null ) {
 			$ext = $this->getExtension();
-			if( in_array($ext, $this->allowedExtensions) || (is_array($this->allowedExtensions) && !in_array($ext, $this->allowedExtensions)) ) {
+			if( !in_array($ext, $this->allowedExtensions) ) {
 				throw new UserException('invalidExtension');
 			}
 		}
 		if( $this->allowedMimeTypes !== null ) {
 			$mt = $this->getMIMEType();
-			if( in_array($mt, $this->allowedMimeTypes) || (is_array($this->allowedMimeTypes) && !in_array($mt, $this->allowedMimeTypes)) ) {
+			if( !in_array($mt, $this->allowedMimeTypes) ) {
 				throw new UserException('invalidMimeType');
 			}
 		}
