@@ -42,7 +42,7 @@ class AppConfig {
 	 * Constructor
 	 */
 	protected function __construct() {
-		$this->path = defined('STOREPATH') ? STOREPATH . 'config.json' : null;
+		$this->path = defined('STORE_PATH') ? STORE_PATH . 'config.json' : null;
 		$this->meta = [];
 		$this->data = [];
 		$this->loadSmartly();
