@@ -1,9 +1,12 @@
 <?php
+/**
+ * @author Florent HAZARD <f.hazard@sowapps.com>
+ */
 
 namespace Orpheus\Publisher;
 
 use Exception;
-use Orpheus\Rendering\HTMLRendering;
+use Orpheus\Rendering\HtmlRendering;
 use Orpheus\SqlRequest\SqlSelectRequest;
 
 /**
@@ -116,7 +119,7 @@ class Paginator implements \IteratorAggregate {
 			// Could be an empty string
 			try {
 				$this->calculate();
-				$this->rendered = HTMLRendering::getCurrent()->render($this->layout, [
+				$this->rendered = HtmlRendering::getCurrent()->render($this->layout, [
 					'paginator' => $this,
 				]);
 			} catch( Exception $e ) {

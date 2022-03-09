@@ -1,6 +1,6 @@
 <?php
 /**
- * AppConfig
+ * @author Florent HAZARD <f.hazard@sowapps.com>
  */
 
 namespace Orpheus\Config;
@@ -42,7 +42,7 @@ class AppConfig {
 	 * Constructor
 	 */
 	protected function __construct() {
-		$this->path = defined('STORE_PATH') ? STORE_PATH . 'config.json' : null;
+		$this->path = defined('STORE_PATH') ? STORE_PATH . '/config.json' : null;
 		$this->meta = [];
 		$this->data = [];
 		$this->loadSmartly();
