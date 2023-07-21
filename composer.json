@@ -17,9 +17,9 @@
 		}
 	},
 	"require": {
-		"orpheus/orpheus-core": "*",
-		"orpheus/orpheus-hook": "*",
-		"orpheus/orpheus-cache": "*"
+		"orpheus/orpheus-core": "4.*",
+		"orpheus/orpheus-hook": "4.*",
+		"orpheus/orpheus-cache": "4.*"
 	},
 	"suggest": {
 		"ext-openssl": "Some features require OpenSSL",
