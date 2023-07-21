@@ -1,0 +1,7 @@
+cli:
+    openssl-encryption-list:
+        path: "openssl-encryption-list"
+        controller: "Orpheus\\WebTools\\Controller\\OpenSslEncryptionListCliController"
+    openssl-encryption-compare:
+        path: "openssl-encryption-compare"
+        controller: "Orpheus\\WebTools\\Controller\\OpenSslEncryptionComparisonCliController"

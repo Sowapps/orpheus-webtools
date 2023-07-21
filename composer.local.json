@@ -1,7 +1,7 @@
 {
-	"name" : "orpheus/orpheus-webtools",
-	"description" : "Orpheus WebTools",
-	"keywords" : [
+	"name": "orpheus/orpheus-webtools",
+	"description": "Orpheus WebTools",
+	"keywords": [
 		"orpheus",
 		"web",
 		"tools",
@@ -20,10 +20,6 @@
 		"orpheus/orpheus-core": "*",
 		"orpheus/orpheus-hook": "*",
 		"orpheus/orpheus-cache": "*"
-	},
-	"suggest": {
-		"ext-openssl": "Some features require OpenSSL",
-		"ext-fileinfo": "Email feature may require FileInfo"
 	},
 	"type": "library",
 	"license": "MIT",

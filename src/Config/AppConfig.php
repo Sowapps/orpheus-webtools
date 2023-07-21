@@ -6,6 +6,7 @@
 namespace Orpheus\Config;
 
 use Exception;
+use RuntimeException;
 
 /**
  * The AppConfig class
@@ -21,37 +22,36 @@ class AppConfig {
 	CONST TYPE_STRING = 'simple';
 	CONST TYPE_BOOLEAN = 'boolean';
 	CONST TYPE_LONG_TEXT = 'text';
-	CONST DEFAULT_TYPE = self::TYPE_STRING;
+	const DEFAULT_TYPE = self::TYPE_STRING;
+	const ALL_TYPES = [self::TYPE_STRING, self::TYPE_BOOLEAN, self::TYPE_LONG_TEXT];
 	
 	/** @var static */
-	protected static $instance;
+	protected static AppConfig $instance;
 	
 	/** @var string */
-	protected $path;
+	protected ?string $path;
 	
 	/** @var array */
-	protected $data;
+	protected array $data = [];
 	
 	/** @var array */
-	protected $meta;
+	protected array $meta = [];
 	
 	/** @var bool */
-	protected $changed;
+	protected bool $changed = false;
 	
 	/**
 	 * Constructor
 	 */
 	protected function __construct() {
 		$this->path = defined('STORE_PATH') ? STORE_PATH . '/config.json' : null;
-		$this->meta = [];
-		$this->data = [];
 		$this->loadSmartly();
 	}
 	
 	/**
 	 * Load config if it exists
 	 */
-	public function loadSmartly() {
+	public function loadSmartly(): void {
 		if( $this->path && is_readable($this->path) ) {
 			$this->load();
 		}
@@ -62,9 +62,9 @@ class AppConfig {
 	 *
 	 * @throws Exception
 	 */
-	public function load() {
+	public function load(): void {
 		if( !$this->path ) {
-			throw new Exception('Unable to load AppConfig from undefined path');
+			throw new RuntimeException('Unable to load AppConfig from undefined path');
 		}
 		$jsonConfig = (object) json_decode(file_get_contents($this->path), true);
 		if( isset($jsonConfig->data) ) {
@@ -79,10 +79,8 @@ class AppConfig {
 	
 	/**
 	 * Get it as array
-	 *
-	 * @return array
 	 */
-	public function asArray() {
+	public function asArray(): array {
 		return $this->data;
 	}
 	
@@ -94,7 +92,7 @@ class AppConfig {
 	 * @param string $type
 	 * @return bool
 	 */
-	public function preset($key, $default, $type = null) {
+	public function preset($key, $default, $type = null): bool {
 		$changed = false;
 		if( $type || !isset($this->meta[$key]) ) {
 			$type = $type ?: self::DEFAULT_TYPE;
@@ -117,7 +115,7 @@ class AppConfig {
 	 * @param string $key
 	 * @return bool
 	 */
-	public function has($key) {
+	public function has($key): bool {
 		return isset($this->data[$key]);
 	}
 	
@@ -128,12 +126,13 @@ class AppConfig {
 	 * @param mixed $value
 	 * @return bool
 	 */
-	public function set($key, $value) {
+	public function set($key, $value): bool {
 		if( array_key_exists($key, $this->data) && $this->data[$key] === $value ) {
 			return false;
 		}
 		$this->data[$key] = $value;
 		$this->changed = true;
+		
 		return true;
 	}
 	
@@ -144,7 +143,7 @@ class AppConfig {
 	 * @param mixed|null $default The default value if key is not set
 	 * @return mixed|null
 	 */
-	public function get($key, $default = null) {
+	public function get($key, $default = null): mixed {
 		return $this->has($key) ? $this->data[$key] : $default;
 	}
 	
@@ -153,7 +152,7 @@ class AppConfig {
 	 *
 	 * @param string $key
 	 */
-	public function remove($key) {
+	public function remove($key): void {
 		unset($this->data[$key]);
 	}
 	
@@ -171,7 +170,7 @@ class AppConfig {
 	 *
 	 * @return int
 	 */
-	public function save() {
+	public function save(): int {
 		return file_put_contents($this->path, json_encode([
 			'meta'    => $this->meta,
 			'data'    => $this->data,
@@ -181,51 +180,40 @@ class AppConfig {
 	
 	/**
 	 * Get the type of $key
-	 *
-	 * @param $key
-	 * @return string
 	 */
-	public function getType($key) {
+	public function getType(string $key): string {
 		return isset($this->meta[$key]) ? $this->meta[$key] : self::DEFAULT_TYPE;
 	}
 	
 	/**
 	 * Get the path
-	 *
-	 * @return string
 	 */
-	public function getPath() {
+	public function getPath(): ?string {
 		return $this->path;
 	}
 	
 	/**
 	 * Set the path
-	 *
-	 * @param string $path
-	 * @return $this
 	 */
-	public function setPath($path) {
+	public function setPath(string $path): static {
 		$this->path = $path;
+		
 		return $this;
 	}
 	
 	/**
 	 * Get the data
-	 *
-	 * @return array
 	 */
-	public function getData() {
+	public function getData(): array {
 		return $this->data;
 	}
 	
 	/**
 	 * Set the data
-	 *
-	 * @param array $data
-	 * @return $this
 	 */
-	public function setData($data) {
+	public function setData(array $data): static {
 		$this->data = $data;
+		
 		return $this;
 	}
 	
@@ -235,7 +223,7 @@ class AppConfig {
 	 * @return AppConfig
 	 * @see getInstance()
 	 */
-	public static function instance() {
+	public static function instance(): AppConfig {
 		return static::getInstance();
 	}
 	
@@ -244,10 +232,11 @@ class AppConfig {
 	 *
 	 * @return AppConfig
 	 */
-	public static function getInstance() {
-		if( !static::$instance ) {
+	public static function getInstance(): AppConfig {
+		if( !isset(static::$instance) ) {
 			static::$instance = new static();
 		}
+		
 		return static::$instance;
 	}
 	
