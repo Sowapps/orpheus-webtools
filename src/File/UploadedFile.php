@@ -1,6 +1,6 @@
 <?php
 /**
- * UploadedFile
+ * @author Florent Hazard <contact@sowapps.com>
  */
 
 namespace Orpheus\File;
@@ -9,74 +9,66 @@ use Orpheus\Exception\UserException;
 use SplFileInfo;
 
 /**
- * The UploadedFile class
- *
- * @author Florent Hazard <contact@sowapps.com>
- *
+ * Class representing a http uploaded file
  */
 class UploadedFile {
 	
 	/**
 	 * Allowed extension to upload
 	 *
-	 * @var array
+	 * @var array|null
 	 */
 	public ?array $allowedExtensions = null;
 	
 	/**
 	 * Allowed mime types to upload
 	 *
-	 * @var array
+	 * @var array|null
 	 */
 	public ?array $allowedMimeTypes = null;
 	
 	/**
 	 * Allowed type to upload
 	 *
-	 * @var array
+	 * @var string|null
 	 */
-	public $expectedType;
+	public ?string $expectedType = null;
 	
 	/**
 	 * The file name
 	 *
 	 * @var string
 	 */
-	protected $fileName;
+	protected string $fileName;
 	
 	/**
 	 * The file size
 	 *
 	 * @var int
 	 */
-	protected $fileSize;
+	protected int $fileSize;
 	
 	/**
 	 * The file temp path
 	 *
 	 * @var string
 	 */
-	protected $tempPath;
+	protected string $tempPath;
 	
 	/**
 	 * The file uploading error
 	 *
 	 * @var int
 	 */
-	protected $error;
+	protected int $error;
 	
 	/**
 	 * Constructor
-	 *
-	 * @param string $fileName
-	 * @param int $fileSize
-	 * @param string $tempPath
-	 * @param int $error
 	 */
-	public function __construct($fileName, $fileSize, $tempPath, $error) {
+	public function __construct(string $tempPath, string $fileName, int $fileSize, int $error) {
+		$this->tempPath = $tempPath;
 		$this->fileName = $fileName;
 		$this->fileSize = $fileSize;
-		$this->tempPath = $tempPath;
 		$this->error = $error;
 	}
 	
@@ -91,19 +83,15 @@ class UploadedFile {
 	
 	/**
 	 * Get the file name
-	 *
-	 * @return string
 	 */
-	public function getFileName() {
+	public function getFileName(): string {
 		return $this->fileName;
 	}
 	
 	/**
 	 * Get the file basename
-	 *
-	 * @return string
 	 */
-	public function getBaseName() {
+	public function getBaseName(): string {
 		return basename($this->fileName);
 	}
 	
@@ -112,65 +100,55 @@ class UploadedFile {
 	 *
 	 * @return number
 	 */
-	public function getFileSize() {
+	public function getFileSize(): int {
 		return $this->fileSize;
 	}
 	
 	/**
 	 * Get the upload error
-	 *
-	 * @return int
 	 */
-	public function getError() {
+	public function getError(): int {
 		return $this->error;
 	}
 	
 	/**
 	 * Move the file to $path
-	 *
-	 * @param string $path
-	 * @return boolean
 	 */
-	public function moveTo($path) {
+	public function moveTo(string $path): bool {
 		return move_uploaded_file($this->getTempPath(), $path);
 	}
 	
 	/**
 	 * Get temporarily path to file
-	 *
-	 * @return string
 	 */
-	public function getTempPath() {
+	public function getTempPath(): string {
 		return $this->tempPath;
 	}
 	
 	/**
 	 * Validate the input file is respecting upload restrictions
+	 * This function throws exception in case of error
 	 *
 	 * @throws UserException
-	 *
-	 * This function throws exception in case of error
 	 */
-	public function validate() {
+	public function validate(): void {
 		if( $this->error ) {
 			switch( $this->error ) {
 				case UPLOAD_ERR_INI_SIZE:
 				case UPLOAD_ERR_FORM_SIZE:
 				{
 					throw new UserException('fileTooBig');
-					break;
 				}
 				case UPLOAD_ERR_PARTIAL:
 				case UPLOAD_ERR_NO_FILE:
 				{
 					throw new UserException('transfertIssue');
-					break;
 				}
 				default:
 				{
 					// UPLOAD_ERR_NO_TMP_DIR UPLOAD_ERR_CANT_WRITE UPLOAD_ERR_EXTENSION
 					// http://php.net/manual/fr/features.file-upload.errors.php
-					log_error("Server upload error (error={$this->error}, name={$this->fileName})", 'Uploading file', false);
+					log_error("Server upload error (error={$this->error}, name={$this->fileName})", 'Uploading file');
 					throw new UserException('serverIssue');
 				}
 			}
@@ -188,7 +166,7 @@ class UploadedFile {
 			}
 		}
 		if( $this->allowedMimeTypes !== null ) {
-			$mt = $this->getMIMEType();
+			$mt = $this->getMimeType();
 			if( !in_array($mt, $this->allowedMimeTypes) ) {
 				throw new UserException('invalidMimeType');
 			}
@@ -200,78 +178,68 @@ class UploadedFile {
 	 *
 	 * return string
 	 */
-	public function getType() {
-		[$type,] = explodeList('/', $this->getMIMEType(), 2);
+	public function getType(): string {
+		[$type,] = explodeList('/', $this->getMimeType(), 2);
 		return $type;
 	}
 	
 	/**
 	 * Get the file mime type
-	 *
-	 * @return string
 	 */
-	public function getMIMEType() {
+	public function getMimeType(): string {
 		return getMimeType($this->tempPath);
 	}
 	
 	/**
 	 * Get the file extension
-	 *
-	 * @return string
 	 */
-	public function getExtension() {
+	public function getExtension(): string {
 		return strtolower(pathinfo($this->fileName, PATHINFO_EXTENSION));
 	}
 	
 	/**
 	 * Get SplFileInfo object for this file
-	 *
-	 * @return SplFileInfo
 	 */
-	public function getSplFileInfo() {
+	public function getSplFileInfo(): SplFileInfo {
 		return new SplFileInfo($this->getTempPath());
 	}
 	
 	/**
 	 * Load file from input $name
 	 *
-	 * @param string $name
-	 * @return UploadedFile
+	 * @return UploadedFile|UploadedFile[]|null
 	 */
-	public static function load($name) {
+	public static function loadFiles(string $name): UploadedFile|array|null {
 		if( empty($_FILES[$name]['name']) ) {
 			return null;
 		}
 		if( is_array($_FILES[$name]['name']) ) {
-			return static::loadPath($_FILES[$name]);
+			return static::loadInputFiles($_FILES[$name]);
 		}
-		return new static($_FILES[$name]['name'], $_FILES[$name]['size'], $_FILES[$name]['tmp_name'], $_FILES[$name]['error']);
+		return new static($_FILES[$name]['tmp_name'], $_FILES[$name]['name'], $_FILES[$name]['size'], $_FILES[$name]['error']);
 	}
 	
 	/**
 	 * Get uploaded file from path
 	 *
-	 * @param array $from
-	 * @param array $files
-	 * @param string $path
-	 * @return UploadedFile
+	 * @return UploadedFile[]
 	 */
-	protected static function loadPath($from, &$files = [], $path = '') {
-		$fileName = ($path === '') ? $from['name'] : apath_get($from['name'], $path);
+	protected static function loadInputFiles(array $input, array &$files = [], ?string $path = null): array {
+		$fileName = $path ? array_path_get($input['name'], $path) : $input['name'];
 		if( empty($fileName) ) {
 			return $files;
 		}
 		if( is_array($fileName) ) {
-			if( $path !== '' ) {
+			if( $path ) {
 				$path .= '/';
 			}
 			foreach( $fileName as $index => $fn ) {
-				static::loadPath($from, $files, $path . $index);
+				static::loadInputFiles($input, $files, $path . $index);
 			}
 			return $files;
 		}
-		apath_setp($files, $path, new static($fileName, apath_get($from, 'size/' . $path),
-			apath_get($from, 'tmp_name/' . $path), apath_get($from, 'error/' . $path)));
+		array_path_set($files, $path, new static(array_path_get($input, 'tmp_name/' . $path), $fileName, array_path_get($input, 'size/' . $path),
+			array_path_get($input, 'error/' . $path)));
 		return $files;
 	}
 	

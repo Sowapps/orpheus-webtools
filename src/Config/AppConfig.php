@@ -28,20 +28,18 @@ class AppConfig {
 	/** @var static */
 	protected static AppConfig $instance;
 	
-	/** @var string */
 	protected ?string $path;
 	
-	/** @var array */
 	protected array $data = [];
 	
-	/** @var array */
 	protected array $meta = [];
 	
-	/** @var bool */
 	protected bool $changed = false;
 	
 	/**
-	 * Constructor
+	 * AppConfig constructor
+	 *
+	 * @throws Exception
 	 */
 	protected function __construct() {
 		$this->path = defined('STORE_PATH') ? STORE_PATH . '/config.json' : null;
@@ -50,6 +48,7 @@ class AppConfig {
 	
 	/**
 	 * Load config if it exists
+	 * @throws Exception
 	 */
 	public function loadSmartly(): void {
 		if( $this->path && is_readable($this->path) ) {
@@ -86,13 +85,8 @@ class AppConfig {
 	
 	/**
 	 * Set $key if not yet set
-	 *
-	 * @param string $key
-	 * @param mixed $default
-	 * @param string $type
-	 * @return bool
 	 */
-	public function preset($key, $default, $type = null): bool {
+	public function preset(string $key, mixed $default, ?string $type = null): bool {
 		$changed = false;
 		if( $type || !isset($this->meta[$key]) ) {
 			$type = $type ?: self::DEFAULT_TYPE;
@@ -111,22 +105,15 @@ class AppConfig {
 	
 	/**
 	 * Test if config has $key
-	 *
-	 * @param string $key
-	 * @return bool
 	 */
-	public function has($key): bool {
+	public function has(string $key): bool {
 		return isset($this->data[$key]);
 	}
 	
 	/**
 	 * Set the $value of $key
-	 *
-	 * @param string $key
-	 * @param mixed $value
-	 * @return bool
 	 */
-	public function set($key, $value): bool {
+	public function set(string $key, mixed $value): bool {
 		if( array_key_exists($key, $this->data) && $this->data[$key] === $value ) {
 			return false;
 		}
@@ -143,16 +130,14 @@ class AppConfig {
 	 * @param mixed|null $default The default value if key is not set
 	 * @return mixed|null
 	 */
-	public function get($key, $default = null): mixed {
+	public function get(string $key, mixed $default = null): mixed {
 		return $this->has($key) ? $this->data[$key] : $default;
 	}
 	
 	/**
 	 * Test if config has $key
-	 *
-	 * @param string $key
 	 */
-	public function remove($key): void {
+	public function remove(string $key): void {
 		unset($this->data[$key]);
 	}
 	
@@ -167,8 +152,6 @@ class AppConfig {
 	
 	/**
 	 * Save config into the filesystem
-	 *
-	 * @return int
 	 */
 	public function save(): int {
 		return file_put_contents($this->path, json_encode([
@@ -182,7 +165,7 @@ class AppConfig {
 	 * Get the type of $key
 	 */
 	public function getType(string $key): string {
-		return isset($this->meta[$key]) ? $this->meta[$key] : self::DEFAULT_TYPE;
+		return $this->meta[$key] ?? self::DEFAULT_TYPE;
 	}
 	
 	/**
@@ -220,7 +203,6 @@ class AppConfig {
 	/**
 	 * Alias for getInstance()
 	 *
-	 * @return AppConfig
 	 * @see getInstance()
 	 */
 	public static function instance(): AppConfig {
@@ -229,8 +211,6 @@ class AppConfig {
 	
 	/**
 	 * Get main instance
-	 *
-	 * @return AppConfig
 	 */
 	public static function getInstance(): AppConfig {
 		if( !isset(static::$instance) ) {

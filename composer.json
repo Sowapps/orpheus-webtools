@@ -17,9 +17,8 @@
 		}
 	},
 	"require": {
-		"orpheus/orpheus-core": "4.*",
-		"orpheus/orpheus-hook": "4.*",
-		"orpheus/orpheus-cache": "4.*"
+      "orpheus/orpheus-core": "^4.0.0",
+      "orpheus/orpheus-cache": "^4.0.0"
 	},
 	"suggest": {
 		"ext-openssl": "Some features require OpenSSL",
@@ -31,7 +30,7 @@
 		{
 			"name": "Florent HAZARD",
 			"email": "contact@sowapps.com",
-			"homepage": "http://sowapps.com",
+          "homepage": "https://sowapps.com",
 			"role": "Developer"
 		}
 	]

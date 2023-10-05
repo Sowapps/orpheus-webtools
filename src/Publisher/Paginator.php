@@ -6,114 +6,100 @@
 namespace Orpheus\Publisher;
 
 use Exception;
+use IteratorAggregate;
+use Orpheus\InputController\HttpController\HttpResponse;
+use Orpheus\InputController\HttpController\RedirectHttpResponse;
 use Orpheus\Rendering\HtmlRendering;
 use Orpheus\SqlRequest\SqlSelectRequest;
+use Traversable;
 
 /**
  * Class Paginator
  *
  * Tool to paginate result from query through multiple pages
  *
- * @author Florent Hazard <contact@sowapps.com>
+ * TODO This tool is outdated, it was not recently tested
  */
-class Paginator implements \IteratorAggregate {
+class Paginator implements IteratorAggregate {
 	
-	/** @var string */
-	protected $url;
+	protected string $url;
 	
-	/** @var SqlSelectRequest */
-	protected $query;
+	protected SqlSelectRequest $query;
 	
-	/** @var int */
-	protected $page;
+	protected int $page;
 	
-	/** @var int */
-	protected $rowCount;
+	protected int $rowCount;
 	
-	/** @var string */
-	protected $layout;
+	protected string $layout;
 	
-	/** @var string */
-	protected $rendered;
+	protected ?string $rendered = null;
 	
-	/** @var int */
-	protected $pageDelta = 3;
+	protected int $pageDelta = 3;
 	
-	/** @var int */
-	protected $rowPerPage = 100;
+	protected int $rowPerPage = 100;
 	
-	/** @var bool */
-	protected $displayEmpty = false;
+	protected bool $displayEmpty = false;
 	
-	public function __construct($route, $query = null, $rowPerPage = 100) {
+	public function __construct(string $route, SqlSelectRequest $query, int $page = 1, int $rowPerPage = 100) {
 		$this->setUrl(strpos($route, '://') ? $route : u($route));
 		$this->setLayout('paginator-pagination');
 		$this->setQuery($query);
-		if( function_exists('GET') ) {
-			$this->setPage(GET('p'));
-		}
+		$this->setPage($page);
 		$this->setRowPerPage($rowPerPage);
 		$this->verify();
 	}
 	
-	public function verify() {
+	public function verify(): ?HttpResponse {
 		// Redirect all invalid page count
-		if( !$this->page ) {
-			$this->page = 0;
-		} else {
-			if( !is_ID($this->page) ) {
-				redirectTo($this->getPageLink(0));
-			}
-			$this->page = intval($this->page);
-			if( $this->page ) {
-				if( $this->page > $this->getLastPage() ) {
-					redirectTo($this->getPageLink($this->getLastPage()));
-				} elseif( $this->page < 0 ) {
-					redirectTo($this->getPageLink(0));
-				}
+		//			if( !is_ID($this->page) ) {
+		//				return new RedirectHttpResponse($this->getPageLink(0));
+		//			}
+		if( $this->page ) {
+			if( $this->page > $this->getLastPage() ) {
+				return new RedirectHttpResponse($this->getPageLink($this->getLastPage()));
+			} else if( $this->page < 0 ) {
+				return new RedirectHttpResponse($this->getPageLink(0));
 			}
 		}
+		
+		return null;
 	}
 	
-	public function getPageLink($page) {
+	public function getPageLink($page): string {
 		return $this->getUrl() . ($page ? '?p=' . $page : '');
 	}
 	
-	public function getUrl() {
+	public function getUrl(): string {
 		return $this->url;
 	}
 	
-	public function setUrl($url) {
+	public function setUrl(string $url): static {
 		$this->url = $url;
 		return $this;
 	}
 	
-	public function getLastPage() {
+	public function getLastPage(): int {
 		return intval($this->getRowCount() / $this->getRowPerPage());
 	}
 	
-	/**
-	 * @return int
-	 * @throws Exception
-	 */
-	public function getRowCount() {
+	public function getRowCount(): int {
 		return $this->rowCount;
 	}
 	
-	public function getRowPerPage() {
+	public function getRowPerPage(): int {
 		return $this->rowPerPage;
 	}
 	
-	public function setRowPerPage($rowPerPage) {
+	public function setRowPerPage(int $rowPerPage): static {
 		$this->rowPerPage = $rowPerPage;
 		return $this;
 	}
 	
-	public function __toString() {
+	public function __toString(): string {
 		return $this->displayEmpty || $this->getRowCount() ? $this->render() : '';
 	}
 	
-	public function render() {
+	public function render(): ?string {
 		if( $this->rendered === null ) {
 			// If not generated yet
 			// Could be an empty string
@@ -122,17 +108,14 @@ class Paginator implements \IteratorAggregate {
 				$this->rendered = HtmlRendering::getCurrent()->render($this->layout, [
 					'paginator' => $this,
 				]);
-			} catch( Exception $e ) {
-				log_error($e, 'paginator-pagination', false);
+			} catch( Exception $exception ) {
+				log_error($exception, 'paginator-pagination');
 			}
 		}
 		return $this->rendered;
 	}
 	
-	protected function calculate() {
-		if( !$this->query ) {
-			throw new Exception('Invalid query');
-		}
+	protected function calculate(): void {
 		$this->query
 			->asObjectList()
 			->number($this->getRowPerPage())
@@ -140,79 +123,67 @@ class Paginator implements \IteratorAggregate {
 			->setUsingCache(false);
 	}
 	
-	public function next() {
+	public function next(): mixed {
 		return $this->query->fetch();
 	}
 	
-	public function getPage() {
+	public function getPage(): int {
 		return $this->page;
 	}
 	
-	public function setPage($page) {
+	public function setPage(int $page): static {
 		$this->page = $page;
 		return $this;
 	}
 	
-	public function getLayout() {
+	public function getLayout(): string {
 		return $this->layout;
 	}
 	
-	public function setLayout($layout) {
+	public function setLayout(string $layout): static {
 		$this->layout = $layout;
 		return $this;
 	}
 	
-	public function getRendered() {
+	public function getRendered(): string {
 		return $this->rendered;
 	}
 	
-	public function getPageDelta() {
+	public function getPageDelta(): int {
 		return $this->pageDelta;
 	}
 	
-	public function setPageDelta($pageDelta) {
+	public function setPageDelta(int $pageDelta): static {
 		$this->pageDelta = $pageDelta;
 		return $this;
 	}
 	
-	/**
-	 * @return int
-	 */
-	public function getMinorPage() {
-		return (int) max($this->page - $this->pageDelta, 0);
+	public function getMinorPage(): int {
+		return max($this->page - $this->pageDelta, 0);
 	}
 	
-	/**
-	 * @return int
-	 */
-	public function getMajorPage() {
-		return (int) min($this->page + $this->pageDelta, $this->getLastPage());
+	public function getMajorPage(): int {
+		return min($this->page + $this->pageDelta, $this->getLastPage());
 	}
 	
-	public function getDisplayEmpty() {
+	public function getDisplayEmpty(): bool {
 		return $this->displayEmpty;
 	}
 	
-	public function setDisplayEmpty($displayEmpty) {
+	public function setDisplayEmpty(bool $displayEmpty): static {
 		$this->displayEmpty = $displayEmpty;
 		return $this;
 	}
 	
-	public function getIterator() {
+	public function getIterator(): Traversable {
 		return $this->getQuery();
 	}
 	
-	/**
-	 * @return SqlSelectRequest
-	 */
-	public function getQuery() {
+	public function getQuery(): SqlSelectRequest {
 		return $this->query;
 	}
 	
-	/**
-	 * @param SqlSelectRequest
-	 */
-	public function setQuery(SqlSelectRequest $query) {
+	public function setQuery(SqlSelectRequest $query): static {
 		$this->query = $query;
 		$this->rowCount = $this->query->count();
 		

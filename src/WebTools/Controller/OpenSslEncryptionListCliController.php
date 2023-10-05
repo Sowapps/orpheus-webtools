@@ -12,7 +12,6 @@ class OpenSslEncryptionListCliController extends AbstractOpenSslCliController {
 	
 	/**
 	 * @param CliRequest $request The input CLI request
-	 * @return CliResponse
 	 */
 	public function run($request): CliResponse {
 		$this->checkSupport();

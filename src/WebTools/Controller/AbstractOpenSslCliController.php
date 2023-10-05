@@ -10,14 +10,13 @@ use Orpheus\InputController\CliController\CliController;
 
 abstract class AbstractOpenSslCliController extends CliController {
 	
-	
 	public function checkSupport(): void {
 		if( !$this->isSupported() ) {
 			throw new UserException('Server is not supporting OpenSSL features');
 		}
 	}
 	
-	public function isSupported() {
+	public function isSupported(): bool {
 		return function_exists('openssl_get_cipher_methods');
 	}
 	

@@ -34,17 +34,14 @@ class SlugGenerator {
 	/**
 	 * How to process word case
 	 *
-	 * @var boolean
+	 * @var int
 	 */
 	protected int $caseProcessing = self::CASE_CAMEL_UPPER;
 	
 	/**
 	 * Format the $string
-	 *
-	 * @param string $string
-	 * @return
 	 */
-	public function format($string) {
+	public function format(string $string): string {
 		// Order is very important
 		
 		$string = ucwords(str_replace('&', 'and', strtolower($string)));
@@ -58,21 +55,20 @@ class SlugGenerator {
 		// This function convert also spaces into underscore, behavior we don't want here, so spaces should be removed before
 		$string = convertSpecialChars($string);
 		
-		if( $this->caseProcessing !== null ) {
-			if( $this->caseProcessing === self::CASE_LOWER ) {
-				$string = strtolower($string);
-			}
-			if( $this->isCamelCaseProcessing() ) {
-				if( $this->caseProcessing === self::CASE_CAMEL_LOWER ) {
-					$string = lcfirst($string);
-					// } else
-					// if( $case == UPPERCAMELCASE ) {
-					// $string = ucfirst($string);
-				}
+		if( $this->caseProcessing === self::CASE_LOWER ) {
+			$string = strtolower($string);
+		}
+		if( $this->isCamelCaseProcessing() ) {
+			if( $this->caseProcessing === self::CASE_CAMEL_LOWER ) {
+				$string = lcfirst($string);
+				// } else
+				// if( $case == UPPERCAMELCASE ) {
+				// $string = ucfirst($string);
 			}
 		}
 		
 		// As last change, remove duplicate hyphens
+		/** @noinspection RegExpRedundantEscape */
 		$string = trim(preg_replace('#\-+#', '-', $string), '-');
 		
 		// After all changes, we truncate the string if over max length
@@ -84,55 +80,33 @@ class SlugGenerator {
 	}
 	
 	/**
-	 * Is this generator removing spaces ?
-	 *
-	 * @return boolean
-	 */
-	public function isRemovingSpaces() {
-		return $this->removeSpaces;
-	}
-	
-	/**
 	 * Is this generator camel case processing ?
-	 *
-	 * @return boolean
 	 */
-	public function isCamelCaseProcessing() {
-		return bintest($this->caseProcessing, CAMELCASE);
+	public function isCamelCaseProcessing(): bool {
+		return matchBits($this->caseProcessing, self::CASE_CAMEL);
 	}
 	
-	/**
-	 * @return int|null
-	 */
 	public function getMaxLength(): ?int {
 		return $this->maxLength;
 	}
 	
-	/**
-	 * @param int|null $maxLength
-	 */
-	public function setMaxLength(?int $maxLength): self {
+	public function setMaxLength(?int $maxLength): static {
 		$this->maxLength = $maxLength;
 		
 		return $this;
 	}
 	
 	/**
-	 * Get is removing spaces
-	 *
-	 * @return boolean
+	 * Is this generator removing spaces ?
 	 */
-	public function getRemoveSpaces() {
+	public function isRemovingSpaces(): bool {
 		return $this->removeSpaces;
 	}
 	
 	/**
 	 * Set removing spaces
-	 *
-	 * @param boolean $removeSpaces
-	 * @return SlugGenerator
 	 */
-	public function setRemoveSpaces($removeSpaces = true) {
+	public function setRemoveSpaces(bool $removeSpaces = true): static {
 		$this->removeSpaces = $removeSpaces;
 		
 		return $this;
@@ -140,20 +114,15 @@ class SlugGenerator {
 	
 	/**
 	 * Get camel case processing
-	 *
-	 * @return int
 	 */
-	public function getCaseProcessing() {
+	public function getCaseProcessing(): int {
 		return $this->caseProcessing;
 	}
 	
 	/**
 	 * Set camel case processing
-	 *
-	 * @param int $caseProcessing
-	 * @return SlugGenerator
 	 */
-	public function setCaseProcessing($caseProcessing) {
+	public function setCaseProcessing(int $caseProcessing): static {
 		$this->caseProcessing = $caseProcessing;
 		
 		return $this;
